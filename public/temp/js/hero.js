@@ -1,7 +1,5 @@
-$(function () {
-  // auto type text
-
-  async function autoType(elementClass, typingSpeed) {
+function autoType(elementClass, element, typingSpeed) {
+  return new Promise(function (resolve, reject) {
     var thhis = $(elementClass);
 
     // set height
@@ -11,7 +9,7 @@ $(function () {
       display: "inline-block",
     });
     // thhis.prepend('<div class="cursor" style="right: initial; left:0;"></div>');
-    thhis = thhis.find(".info_text");
+    thhis = thhis.find($(element));
     $(thhis).css("height", height);
     var text = thhis.text().trim().split("");
 
@@ -22,15 +20,34 @@ $(function () {
     thhis.css("opacity", 1);
     thhis.prev().removeAttr("style");
     thhis.text("");
-    for (var i = 0; i < amntOfChars; i++) {
+    for (var i = 0; i < amntOfChars + 1; i++) {
       (function (i, char) {
         setTimeout(function () {
-          newString += char;
-          thhis.text(newString);
+          if (i - 1 == amntOfChars) {
+            resolve();
+          } else {
+            newString += char;
+            thhis.text(newString);
+          }
         }, i * typingSpeed);
       })(i + 1, text[i]);
     }
     // }, 1500);
-  }
-  autoType($("#hero .info"), 50);
+  });
+}
+
+$(function () {
+  // auto type text
+  autoType($("#hero .title"), $("#hero .title .cont .pir"), 500).then(() => {
+    $("#hero .title .cont .sub").animate(
+      {
+        //-^------------ remove .
+        opacity: 1,
+      },
+      800,
+      function () {
+        console.log("Animation complete.");
+      }
+    );
+  });
 });
